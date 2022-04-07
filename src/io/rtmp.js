@@ -1,29 +1,29 @@
 const net = require('net');
-const NodeRtmpSession = require('../session/rtmp');
-const context = require('../core/context');
+const RtmpSession = require('../session/rtmp');
+const context = require('../context');
 const Logger = require('../utils/logger');
 
-class NodeRtmpServer {
+class RtmpServer {
   constructor(config) {
     this.port = 1935;
 
     this.tcpServer = net.createServer((socket) => {
-      const session = new NodeRtmpSession(config, socket);
+      const session = new RtmpSession(config, socket);
       session.run();
     });
   }
 
   run() {
     this.tcpServer.listen(this.port, () => {
-      Logger.log(`Node Media Rtmp Server started on port: ${this.port}`);
+      Logger.log(`Rtmp Server started on port: ${this.port}`);
     });
 
     this.tcpServer.on('error', (e) => {
-      Logger.error(`Node Media Rtmp Server ${e}`);
+      Logger.error(`Rtmp Server ${e}`);
     });
 
     this.tcpServer.on('close', () => {
-      Logger.log('Node Media Rtmp Server Close.');
+      Logger.log('Rtmp Server Close.');
     });
   }
 
@@ -31,11 +31,11 @@ class NodeRtmpServer {
     this.tcpServer.close();
 
     context.sessions.forEach((session, id) => {
-      if (session instanceof NodeRtmpSession) {
+      if (session instanceof RtmpSession) {
         session.stop();
       }
     });
   }
 }
 
-module.exports = NodeRtmpServer;
+module.exports = RtmpServer;

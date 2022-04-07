@@ -4,7 +4,7 @@
 //  Copyright (c) 2018 Nodemedia. All rights reserved.
 //
 const URL = require('url');
-const context = require('../core/context');
+const context = require('../context');
 const { uuid } = require('../utils/uuid');
 
 const FlvPacket = {
@@ -20,7 +20,7 @@ const FlvPacket = {
   },
 };
 
-class NodeFlvSession {
+class HttpFlvSession {
   constructor(req, res) {
     this.req = req;
     this.res = res;
@@ -135,21 +135,21 @@ class NodeFlvSession {
     //send Metadata
     if (publisher.metaData != null) {
       let packet = FlvPacket.create(publisher.metaData, 18);
-      let tag = NodeFlvSession.createFlvTag(packet);
+      let tag = HttpFlvSession.createFlvTag(packet);
       this.res.write(tag);
     }
 
     //send aacSequenceHeader
     if (publisher.audioCodec == 10) {
       let packet = FlvPacket.create(publisher.aacSequenceHeader, 8);
-      let tag = NodeFlvSession.createFlvTag(packet);
+      let tag = HttpFlvSession.createFlvTag(packet);
       this.res.write(tag);
     }
 
     //send avcSequenceHeader
     if (publisher.videoCodec == 7 || publisher.videoCodec == 12) {
       let packet = FlvPacket.create(publisher.avcSequenceHeader, 9);
-      let tag = NodeFlvSession.createFlvTag(packet);
+      let tag = HttpFlvSession.createFlvTag(packet);
       this.res.write(tag);
     }
 
@@ -180,4 +180,4 @@ class NodeFlvSession {
   }
 }
 
-module.exports = NodeFlvSession;
+module.exports = HttpFlvSession;

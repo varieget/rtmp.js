@@ -1,9 +1,9 @@
 const http = require('http');
-const NodeFlvSession = require('../session/flv');
-const context = require('../core/context');
+const HttpFlvSession = require('../session/http-flv');
+const context = require('../context');
 const Logger = require('../utils/logger');
 
-class NodeHttpServer {
+class HttpFlvServer {
   constructor() {
     this.port = 8080;
 
@@ -16,22 +16,22 @@ class NodeHttpServer {
         res.statusCode(200);
       }
 
-      const session = new NodeFlvSession(req, res);
+      const session = new HttpFlvSession(req, res);
       session.run();
     });
   }
 
   run() {
     this.httpServer.listen(this.port, () => {
-      Logger.log(`Node Media Http Server started port: ${this.port}`);
+      Logger.log(`Http Server started port: ${this.port}`);
     });
 
     this.httpServer.on('error', (e) => {
-      Logger.error(`Node Media Http Server ${e}`);
+      Logger.error(`Http Server ${e}`);
     });
 
     this.httpServer.on('close', () => {
-      Logger.log('Node Media Http Server Close.');
+      Logger.log('Http Server Close.');
     });
   }
 
@@ -39,7 +39,7 @@ class NodeHttpServer {
     this.httpServer.close();
 
     context.sessions.forEach((session, id) => {
-      if (session instanceof NodeFlvSession) {
+      if (session instanceof HttpFlvSession) {
         session.req.destroy();
         context.sessions.delete(id);
       }
@@ -47,4 +47,4 @@ class NodeHttpServer {
   }
 }
 
-module.exports = NodeHttpServer;
+module.exports = HttpFlvServer;

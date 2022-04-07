@@ -1,4 +1,4 @@
-const context = require('../core/context');
+const context = require('../context');
 
 function uuid() {
   let uuid = '';

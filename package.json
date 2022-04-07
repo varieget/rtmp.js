@@ -1,12 +1,21 @@
 {
   "name": "rtmp.js",
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "description": "A Node.js implementation of RTMP/HTTP-FLV Media Server",
+  "main": "src/index.js",
+  "bin": "./bin/rtmp.js",
+  "repository": "https://github.com/varieget/rtmp.js",
+  "keywords": [
+    "rtmp",
+    "http-flv"
+  ],
+  "author": "varieget",
+  "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
-    "prettier": "prettier --write '**/*.js'",
-    "prettier:check": "prettier --check '**/*.js'"
+    "prettier": "prettier --write \"**/*.js\"",
+    "prettier:check": "prettier --check \"**/*.js\""
   },
-  "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
     "prettier": "^2.3.2"

@@ -15,8 +15,8 @@ const {
 const AMF = require('../demux/amf');
 const Handshake = require('../utils/handshake');
 const { uuid } = require('../utils/uuid');
-const NodeFlvSession = require('./flv');
-const context = require('../core/context');
+const HttpFlvSession = require('./http-flv');
+const context = require('../context');
 const Logger = require('../utils/logger');
 
 const N_CHUNK_STREAM = 8;
@@ -105,7 +105,7 @@ const RtmpPacket = {
   },
 };
 
-class NodeRtmpSession {
+class RtmpSession {
   constructor(config, socket) {
     this.config = config;
     this.socket = socket;
@@ -713,7 +713,7 @@ class NodeRtmpSession {
     packet.header.length = packet.payload.length;
     packet.header.timestamp = this.parserPacket.clock;
     let rtmpChunks = this.rtmpChunksCreate(packet);
-    let flvTag = NodeFlvSession.createFlvTag(packet);
+    let flvTag = HttpFlvSession.createFlvTag(packet);
 
     //cache gop
     if (this.rtmpGopCacheQueue != null) {
@@ -732,7 +732,7 @@ class NodeRtmpSession {
         playerSession.res.cork();
       }
 
-      if (playerSession instanceof NodeRtmpSession) {
+      if (playerSession instanceof RtmpSession) {
         if (
           playerSession.isStarting &&
           playerSession.isPlaying &&
@@ -742,7 +742,7 @@ class NodeRtmpSession {
           rtmpChunks.writeUInt32LE(playerSession.playStreamId, 8);
           playerSession.res.write(rtmpChunks);
         }
-      } else if (playerSession instanceof NodeFlvSession) {
+      } else if (playerSession instanceof HttpFlvSession) {
         playerSession.res.write(flvTag, null, (e) => {
           //websocket will throw a error if not set the cb when closed
         });
@@ -805,7 +805,7 @@ class NodeRtmpSession {
     packet.header.length = packet.payload.length;
     packet.header.timestamp = this.parserPacket.clock;
     let rtmpChunks = this.rtmpChunksCreate(packet);
-    let flvTag = NodeFlvSession.createFlvTag(packet);
+    let flvTag = HttpFlvSession.createFlvTag(packet);
 
     //cache gop
     if ((codec_id == 7 || codec_id == 12) && this.rtmpGopCacheQueue != null) {
@@ -829,7 +829,7 @@ class NodeRtmpSession {
         playerSession.res.cork();
       }
 
-      if (playerSession instanceof NodeRtmpSession) {
+      if (playerSession instanceof RtmpSession) {
         if (
           playerSession.isStarting &&
           playerSession.isPlaying &&
@@ -839,7 +839,7 @@ class NodeRtmpSession {
           rtmpChunks.writeUInt32LE(playerSession.playStreamId, 8);
           playerSession.res.write(rtmpChunks);
         }
-      } else if (playerSession instanceof NodeFlvSession) {
+      } else if (playerSession instanceof HttpFlvSession) {
         playerSession.res.write(flvTag, null, (e) => {
           //websocket will throw a error if not set the cb when closed
         });
@@ -885,11 +885,11 @@ class NodeRtmpSession {
         packet.payload = this.metaData;
         packet.header.length = packet.payload.length;
         let rtmpChunks = this.rtmpChunksCreate(packet);
-        let flvTag = NodeFlvSession.createFlvTag(packet);
+        let flvTag = HttpFlvSession.createFlvTag(packet);
 
         for (let playerId of this.players) {
           let playerSession = context.sessions.get(playerId);
-          if (playerSession instanceof NodeRtmpSession) {
+          if (playerSession instanceof RtmpSession) {
             if (
               playerSession.isStarting &&
               playerSession.isPlaying &&
@@ -898,7 +898,7 @@ class NodeRtmpSession {
               rtmpChunks.writeUInt32LE(playerSession.playStreamId, 8);
               playerSession.socket.write(rtmpChunks);
             }
-          } else if (playerSession instanceof NodeFlvSession) {
+          } else if (playerSession instanceof HttpFlvSession) {
             playerSession.res.write(flvTag, null, (e) => {
               //websocket will throw a error if not set the cb when closed
             });
@@ -1398,7 +1398,7 @@ class NodeRtmpSession {
 
         for (let playerId of this.players) {
           let playerSession = context.sessions.get(playerId);
-          if (playerSession instanceof NodeRtmpSession) {
+          if (playerSession instanceof RtmpSession) {
             playerSession.sendStatusMessage(
               playerSession.playStreamId,
               'status',
@@ -1417,7 +1417,7 @@ class NodeRtmpSession {
           context.idlePlayers.add(playerId);
           playerSession.isPlaying = false;
           playerSession.isIdling = true;
-          if (playerSession instanceof NodeRtmpSession) {
+          if (playerSession instanceof RtmpSession) {
             playerSession.sendStreamStatus(
               STREAM_EOF,
               playerSession.playStreamId
@@ -1441,4 +1441,4 @@ class NodeRtmpSession {
   }
 }
 
-module.exports = NodeRtmpSession;
+module.exports = RtmpSession;
