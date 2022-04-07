@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "description": "A Node.js implementation of RTMP/HTTP-FLV Media Server",
   "main": "src/index.js",
-  "bin": "./bin/rtmp.js",
+  "bin": {
+    "rtmp": "./bin/rtmp.js"
+  },
   "repository": "https://github.com/varieget/rtmp.js",
   "keywords": [
     "rtmp",

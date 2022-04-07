@@ -1,9 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'rtmp',
-      script: './src/index.js',
-      watch: './src/',
+      name: 'rtmp.js',
+      script: './bin/rtmp.js',
     },
   ],
 };
